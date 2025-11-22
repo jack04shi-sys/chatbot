@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Coze Agent Chat with Voice</title>
+</head>
+<body>
+  <h2>Coze Agent Chat（支持语音识别）</h2>
+  <!-- 语音识别按钮 -->
+  <button id="voice">🎤 语音输入</button>
+  <!-- 官方嵌入代码 -->
+  <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.2.0-beta.6/libs/oversea/index.js"></script>
+  <script>
+    new CozeWebSDK.WebChatClient({
+      config: {
+        bot_id: '7573652690762366981',
+      },
+      componentProps: {
+        title: 'Coze',
+      },
+      auth: {
+        type: 'token',
+        token: 'pat_pAKjsXCfwee7tT65SRQZIVth92dYea2U1VGFrP8js6hsPAA4Eif64AIjLIRnCl83',
+        onRefreshToken: function () {
+          return 'cztei_0riLRQTX4k3hdcCEf3C5NfVf0OcJn0brE3n7wRbycfqqnrN0w9sXphXSRzmPVLvda'
+        }
+      }
+    });
+
+    // 语音识别部分
+    let recognition;
+    if ('webkitSpeechRecognition' in window) {
+      recognition = new webkitSpeechRecognition();
+      recognition.lang = 'zh-CN';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onresult = function(event) {
+        // 识别结果填到 Coze 聊天窗口输入框
+        // 官方窗口加载有延迟，需等待元素出现
+        let inputBox = document.querySelector('.coze-webchat-input');
+        if (inputBox) {
+          inputBox.value = event.results[0][0].transcript;
+        } else {
+          alert('找不到聊天输入框，请稍等窗口加载完成后再试');
+        }
+      };
+    }
+
+    document.getElementById('voice').onclick = function() {
+      if (recognition) recognition.start();
+      else alert('你的浏览器不支持语音识别');
+    };
+  </script>
+</body>
+</html>
